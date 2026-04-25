@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Birthday Patro · जन्मदिन पात्रो</title>
+  <meta name="description" content="Save and celebrate birthdays in Nepali Bikram Sambat calendar" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Fonts: Tiro Devanagari for Nepali feel, Plus Jakarta Sans for body -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════ HEADER ═══ -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🎂</span>
+        <div class="logo-text">
+          <span class="logo-en">Birthday Patro</span>
+          <span class="logo-np">जन्मदिन पात्रो</span>
+        </div>
+      </div>
+      <!-- MyPatro today widget — library populates this span -->
+      <div class="today-bs-wrap" title="Today's Nepali date (powered by MyPatro)">
+        <span class="today-bs-label">आज</span>
+        <span id="mypatro_nepali_date" class="today-bs-date">…</span>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn-icon" id="notifBtn" title="Notification Settings" aria-label="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <button class="btn-icon" id="syncBtn" title="Sync" aria-label="Sync">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════ MAIN ═══ -->
+  <main class="app-main">
+
+    <!-- ── In-app notification banner ── -->
+    <div id="appNotifBanner" class="notif-banner hidden" role="alert"></div>
+
+    <!-- ── Upcoming birthdays strip ── -->
+    <section class="upcoming-section" id="upcomingSection">
+      <div class="section-label">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Upcoming Birthdays
+      </div>
+      <div class="upcoming-scroll" id="upcomingList">
+        <div class="upcoming-empty">No birthdays saved yet. Add one below!</div>
+      </div>
+    </section>
+
+    <!-- ── Search + Add ── -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by name…" aria-label="Search birthdays" />
+        <button class="search-clear hidden" id="searchClear" aria-label="Clear search">✕</button>
+      </div>
+      <button class="btn-primary" id="addBirthdayBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Birthday
+      </button>
+    </div>
+
+    <!-- ── Birthday list ── -->
+    <section class="birthday-list" id="birthdayList" aria-live="polite">
+      <!-- Cards rendered by JS -->
+    </section>
+
+    <div class="empty-state hidden" id="emptyState">
+      <div class="empty-emoji">🎈</div>
+      <h3>No birthdays yet</h3>
+      <p>Click <strong>Add Birthday</strong> to start your list.</p>
+    </div>
+
+    <!-- ── Sync section ── -->
+    <section class="sync-section">
+      <div class="sync-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Sync Across Devices
+      </div>
+      <p class="sync-note">Your birthdays are saved <strong>on this device</strong>. Sign in only if you want to sync across devices.</p>
+      <div class="sync-buttons">
+        <button class="btn-sync" onclick="signInWithGoogle()">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+        <button class="btn-sync" onclick="signInWithApple()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.14-2.18 1.27-2.16 3.8.03 3.02 2.65 4.03 2.68 4.04l-.07.28zM13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          Continue with Apple
+        </button>
+        <button class="btn-sync btn-sync-email" onclick="signInWithEmail()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          Continue with Email
+        </button>
+      </div>
+      <p class="sync-coming-soon">⚠️ Cloud sync coming soon — placeholder only</p>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════ MODAL: ADD/EDIT ═══ -->
+  <div class="modal-overlay hidden" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle" class="modal-title">Add Birthday</h2>
+        <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      </div>
+
+      <form id="birthdayForm" novalidate>
+        <!-- Name -->
+        <div class="form-group">
+          <label for="bName">Name <span class="required">*</span></label>
+          <input type="text" id="bName" placeholder="e.g. Aarav Sharma" required autocomplete="off" />
+          <span class="field-error" id="nameError"></span>
+        </div>
+
+        <!-- Relation/Note -->
+        <div class="form-group">
+          <label for="bRelation">Relation / Note</label>
+          <input type="text" id="bRelation" placeholder="e.g. Brother, Best friend…" />
+        </div>
+
+        <!-- Date input toggle -->
+        <div class="form-group">
+          <label>Date Input Type</label>
+          <div class="toggle-group">
+            <button type="button" class="toggle-btn active" id="toggleBS" data-mode="bs">🇳🇵 BS (Bikram Sambat)</button>
+            <button type="button" class="toggle-btn" id="toggleAD" data-mode="ad">📅 AD (English)</button>
+          </div>
+        </div>
+
+        <!-- BS Date input -->
+        <div id="bsInputSection">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="bsYear">BS Year <span class="required">*</span></label>
+              <input type="number" id="bsYear" placeholder="e.g. 2055" min="1970" max="2100" />
+            </div>
+            <div class="form-group">
+              <label for="bsMonth">BS Month <span class="required">*</span></label>
+              <select id="bsMonth">
+                <option value="">Select month</option>
+                <option value="1">Baisakh (बैशाख)</option>
+                <option value="2">Jestha (जेठ)</option>
+                <option value="3">Ashadh (असार)</option>
+                <option value="4">Shrawan (साउन)</option>
+                <option value="5">Bhadra (भाद्र)</option>
+                <option value="6">Ashwin (असोज)</option>
+                <option value="7">Kartik (कार्तिक)</option>
+                <option value="8">Mangsir (मंसिर)</option>
+                <option value="9">Poush (पुष)</option>
+                <option value="10">Magh (माघ)</option>
+                <option value="11">Falgun (फागुन)</option>
+                <option value="12">Chaitra (चैत)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="bsDay">BS Day <span class="required">*</span></label>
+              <input type="number" id="bsDay" placeholder="e.g. 15" min="1" max="32" />
+            </div>
+          </div>
+          <span class="field-error" id="bsError"></span>
+        </div>
+
+        <!-- AD Date input -->
+        <div id="adInputSection" class="hidden">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="adYear">AD Year <span class="required">*</span></label>
+              <input type="number" id="adYear" placeholder="e.g. 1998" min="1913" max="2043" />
+            </div>
+            <div class="form-group">
+              <label for="adMonth">AD Month <span class="required">*</span></label>
+              <select id="adMonth">
+                <option value="">Select month</option>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="adDay">AD Day <span class="required">*</span></label>
+              <input type="number" id="adDay" placeholder="e.g. 20" min="1" max="31" />
+            </div>
+          </div>
+          <span class="field-error" id="adError"></span>
+        </div>
+
+        <!-- Conversion preview -->
+        <div class="conversion-preview hidden" id="conversionPreview">
+          <span class="preview-label">Converted:</span>
+          <span id="previewText"></span>
+        </div>
+
+        <!-- Reminder -->
+        <div class="form-group">
+          <label>Reminders</label>
+          <div class="checkbox-group">
+            <label class="checkbox-label"><input type="checkbox" name="reminder" value="0" /> Same day 🎉</label>
+            <label class="checkbox-label"><input type="checkbox" name="reminder" value="1" /> 1 day before</label>
+            <label class="checkbox-label"><input type="checkbox" name="reminder" value="3" /> 3 days before</label>
+            <label class="checkbox-label"><input type="checkbox" name="reminder" value="7" /> 7 days before</label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+          <button type="submit" class="btn-primary" id="saveBtn">Save Birthday</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ DELETE CONFIRM ═══ -->
+  <div class="modal-overlay hidden" id="deleteOverlay" role="dialog" aria-modal="true">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h2 class="modal-title">Delete Birthday</h2>
+        <button class="modal-close" id="deleteClose">✕</button>
+      </div>
+      <p style="margin-bottom:1.5rem;color:var(--text-secondary)">Are you sure you want to delete <strong id="deleteName"></strong>'s birthday?</p>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="deleteCancelBtn">Cancel</button>
+        <button class="btn-danger" id="deleteConfirmBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!--
+    MyPatro Nepali Date Widget
+    ─────────────────────────
+    _mypatroDateFormat options:
+      1 = Nepali digits only
+      2 = English digits only
+      3 = Both Nepali + English
+    _mypatroResponseType: 'html' | 'json'
+
+    The library calls mypatro.com's REST API and injects today's BS date
+    into any element with id="mypatro_nepali_date".
+    It is a display widget only — BS↔AD math uses our own engine.
+  -->
+  <script>
+    let _mypatroDateFormat  = 3;          // show both Nepali & English digits
+    let _mypatroResponseType = 'html';    // inject as HTML string
+    const _mp = document.createElement('script');
+    _mp.src = 'https://mypatro.com/resources/nepali_date/nepali_date.js';
+    _mp.onerror = () => {
+      // Fallback: use our own engine to show today's BS date if CDN is down
+      if (window._bsToday) {
+        const el = document.getElementById('mypatro_nepali_date');
+        if (el) el.textContent = window._bsToday();
+      }
+    };
+    document.head.appendChild(_mp);
+  </script>
+
+  <script src="script.js"></script>
+</body>
+</html>
